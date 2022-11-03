@@ -61,7 +61,15 @@ func (up *UserPostgres) ReserveFunds(user_id uint, service_id uint, order_id uin
 }
 
 func (up *UserPostgres) ConfirmOrder(user_id uint, service_id uint, order_id uint, price uint) error {
+	var numRow uint
+	existsQuery := "select * from reservedfunds where user_id=($1) and service_id=($2) and order_id=($3) and price=($4)"
+	existsRow := up.db.QueryRow(existsQuery, user_id, service_id, order_id, price)
+	err := existsRow.Scan(&numRow)
+	if err != nil {
+		return err
+	}
 	query := "delete from reservedfunds where user_id=($1) and service_id=($2) and order_id=($3) and price=($4)"
 	row := up.db.QueryRow(query, user_id, service_id, order_id, price)
 	return row.Err()
+
 }

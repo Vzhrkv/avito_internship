@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	model "github.com/Vzhrkv/avito_internship/internal/database"
+	"github.com/Vzhrkv/avito_internship/logging"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -91,6 +92,16 @@ func (h *Handler) ConfirmOrder() http.HandlerFunc {
 			logrus.Print(err)
 			h.Respond(w, r, http.StatusInternalServerError, nil)
 		}
+
+		data := &logging.ConfirmedOrder{
+			UserID:    in.UserID,
+			ServiceID: in.ServiceID,
+			OrderID:   in.OrderID,
+			Price:     in.Price,
+		}
+
+		logging.LogToFile(data)
+
 		h.Respond(w, r, http.StatusOK, nil)
 	}
 }
@@ -103,6 +114,5 @@ func (h *Handler) Respond(w http.ResponseWriter, r *http.Request, code int, data
 		if err != nil {
 			return
 		}
-		return
 	}
 }
