@@ -1,6 +1,8 @@
 package service
 
-import "github.com/Vzhrkv/avito_internship/pkg/repository"
+import (
+	"github.com/Vzhrkv/avito_internship/internal/repository"
+)
 
 type UserBalance interface {
 }

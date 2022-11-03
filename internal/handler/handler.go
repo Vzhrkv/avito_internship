@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/Vzhrkv/avito_internship/pkg/service"
+	"github.com/Vzhrkv/avito_internship/internal/service"
 	"github.com/gorilla/mux"
 )
 
