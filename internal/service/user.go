@@ -16,3 +16,7 @@ func NewBalanceService(repo repository.UserBalance) *BalanceService {
 func (bs *BalanceService) CreateBalance(u *model.User) error {
 	return bs.repo.CreateBalance(u)
 }
+
+func (bs *BalanceService) GetBalance(id uint) (uint, error) {
+	return bs.repo.GetBalance(id)
+}

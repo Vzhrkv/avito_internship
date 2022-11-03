@@ -16,7 +16,7 @@ func NewHandler(service *service.Service) *Handler {
 func (h *Handler) InitRoutes() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc("/user/add/balance", h.AddBalance()).Methods("POST")
-	router.HandleFunc("/user/get/balance", nil).Methods("GET")
+	router.HandleFunc("/user/get/balance", h.GetBalance()).Methods("POST")
 	router.HandleFunc("/user/reserve/balance", nil).Methods("POST")
 	router.HandleFunc("/user/confirm-order", nil).Methods("POST")
 	return router

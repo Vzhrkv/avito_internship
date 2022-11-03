@@ -26,9 +26,38 @@ func (h *Handler) AddBalance() http.HandlerFunc {
 		if err := h.service.CreateBalance(u); err != nil {
 			logrus.Print(err)
 		}
-		err := json.NewEncoder(w).Encode(http.StatusOK)
-		if err != nil {
-			return
+
+		h.Respond(w, r, http.StatusCreated, nil)
+	}
+}
+
+func (h *Handler) GetBalance() http.HandlerFunc {
+	type input struct {
+		UserID uint `json:"user_id"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		in := &input{}
+		if err := json.NewDecoder(r.Body).Decode(in); err != nil {
+			logrus.Print(err)
 		}
+
+		balance, err := h.service.GetBalance(in.UserID)
+		if err != nil {
+			logrus.Print(err)
+		}
+		u := &model.User{
+			UserID:  in.UserID,
+			Balance: balance,
+		}
+		h.Respond(w, r, http.StatusOK, u)
+
+	}
+}
+
+func (h *Handler) Respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	if data != nil {
+		json.NewEncoder(w).Encode(data)
 	}
 }

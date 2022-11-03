@@ -7,6 +7,7 @@ import (
 
 type UserBalance interface {
 	CreateBalance(u *model.User) error
+	GetBalance(id uint) (uint, error)
 }
 
 type Service struct {
