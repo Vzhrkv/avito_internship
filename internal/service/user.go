@@ -1,7 +1,6 @@
 package service
 
 import (
-	model "github.com/Vzhrkv/avito_internship/internal/database"
 	"github.com/Vzhrkv/avito_internship/internal/repository"
 )
 
@@ -13,8 +12,8 @@ func NewBalanceService(repo repository.UserBalance) *BalanceService {
 	return &BalanceService{repo: repo}
 }
 
-func (bs *BalanceService) AddBalance(u *model.User) error {
-	return bs.repo.AddBalance(u)
+func (bs *BalanceService) AddBalance(id uint, funds uint) error {
+	return bs.repo.AddBalance(id, funds)
 }
 
 func (bs *BalanceService) GetBalance(id uint) (uint, error) {

@@ -19,12 +19,7 @@ func (h *Handler) AddBalance() http.HandlerFunc {
 			logrus.Print(err)
 		}
 
-		u := &model.User{
-			UserID:  in.UserID,
-			Balance: in.AddFunds,
-		}
-
-		if err := h.service.AddBalance(u); err != nil {
+		if err := h.service.AddBalance(in.UserID, in.AddFunds); err != nil {
 			logrus.Print(err)
 		}
 

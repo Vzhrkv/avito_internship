@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/Vzhrkv/avito_internship/internal/database"
 )
 
@@ -14,9 +15,17 @@ func NewUserPostgres(db *sql.DB) *UserPostgres {
 	return &UserPostgres{db: db}
 }
 
-func (up *UserPostgres) AddBalance(u *model.User) error {
+func (up *UserPostgres) AddBalance(id uint, funds uint) error {
+	u, err := up.getUser(id)
+	if err == nil {
+		fmt.Println(u)
+		u.Balance += funds
+		fmt.Println()
+		query := "update users set balance=($1) where user_id=($2)"
+		return up.db.QueryRow(query, u.Balance, id).Err()
+	}
 	query := "insert into users (user_id, balance) values ($1, $2)"
-	row := up.db.QueryRow(query, u.UserID, u.Balance)
+	row := up.db.QueryRow(query, id, funds)
 	return row.Err()
 }
 
