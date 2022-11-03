@@ -3,8 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-	"github.com/Vzhrkv/avito_internship/internal/database"
+	"github.com/Vzhrkv/avito_internship/internal/model"
 )
 
 type UserPostgres struct {
@@ -18,9 +17,7 @@ func NewUserPostgres(db *sql.DB) *UserPostgres {
 func (up *UserPostgres) AddBalance(id uint, funds uint) error {
 	u, err := up.getUser(id)
 	if err == nil {
-		fmt.Println(u)
 		u.Balance += funds
-		fmt.Println()
 		query := "update users set balance=($1) where user_id=($2)"
 		return up.db.QueryRow(query, u.Balance, id).Err()
 	}
@@ -59,7 +56,6 @@ func (up *UserPostgres) ReserveFunds(user_id uint, service_id uint, order_id uin
 	if user.Balance < price {
 		return errors.New("User don't required mount of money to book this service")
 	}
-
 	user.Balance -= price
 
 	query_users := "update users set balance=($1) where user_id=($2)"
@@ -70,15 +66,22 @@ func (up *UserPostgres) ReserveFunds(user_id uint, service_id uint, order_id uin
 }
 
 func (up *UserPostgres) ConfirmOrder(user_id uint, service_id uint, order_id uint, price uint) error {
-	var numRow uint
-	existsQuery := "select * from reservedfunds where user_id=($1) and service_id=($2) and order_id=($3) and price=($4)"
-	existsRow := up.db.QueryRow(existsQuery, user_id, service_id, order_id, price)
-	err := existsRow.Scan(&numRow)
+	_, err := up.getOrder(user_id, service_id, order_id, price)
 	if err != nil {
-		return err
+		return errors.New("No such order")
 	}
 	query := "delete from reservedfunds where user_id=($1) and service_id=($2) and order_id=($3) and price=($4)"
 	row := up.db.QueryRow(query, user_id, service_id, order_id, price)
 	return row.Err()
+}
 
+func (up *UserPostgres) getOrder(user_id uint, service_id uint, order_id uint, price uint) (model.Order, error) {
+	var ord model.Order
+	query := "select * from reservedfunds where user_id=($1) and service_id=($2) and order_id=($3) and price=($4)"
+	row := up.db.QueryRow(query, user_id, service_id, order_id, price)
+	err := row.Scan(&ord.UserID, &ord.ServiceID, &ord.OrderID, &ord.Price)
+	if err != nil {
+		return model.Order{}, err
+	}
+	return ord, nil
 }

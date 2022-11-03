@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	model "github.com/Vzhrkv/avito_internship/internal/database"
+	model "github.com/Vzhrkv/avito_internship/internal/model"
 	"github.com/Vzhrkv/avito_internship/logging"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -51,14 +51,8 @@ func (h *Handler) GetBalance() http.HandlerFunc {
 }
 
 func (h *Handler) ReserveBalance() http.HandlerFunc {
-	type input struct {
-		UserID    uint `json:"user_id"`
-		ServiceID uint `json:"service_id"`
-		OrderID   uint `json:"order_id"`
-		Price     uint `json:"price"`
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		in := &input{}
+		in := &model.Order{}
 		if err := json.NewDecoder(r.Body).Decode(in); err != nil {
 			logrus.Print(err)
 		}
@@ -71,14 +65,8 @@ func (h *Handler) ReserveBalance() http.HandlerFunc {
 	}
 }
 func (h *Handler) ConfirmOrder() http.HandlerFunc {
-	type input struct {
-		UserID    uint `json:"user_id"`
-		ServiceID uint `json:"service_id"`
-		OrderID   uint `json:"order_id"`
-		Price     uint `json:"price"`
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		in := &input{}
+		in := &model.Order{}
 		if err := json.NewDecoder(r.Body).Decode(in); err != nil {
 			logrus.Print(err)
 		}
@@ -88,14 +76,7 @@ func (h *Handler) ConfirmOrder() http.HandlerFunc {
 			h.Respond(w, r, http.StatusInternalServerError, nil)
 		}
 
-		data := &logging.ConfirmedOrder{
-			UserID:    in.UserID,
-			ServiceID: in.ServiceID,
-			OrderID:   in.OrderID,
-			Price:     in.Price,
-		}
-
-		logging.LogToFile(data)
+		logging.LogToFile(in)
 
 		h.Respond(w, r, http.StatusOK, nil)
 	}
