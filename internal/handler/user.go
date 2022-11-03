@@ -91,7 +91,7 @@ func (h *Handler) ConfirmOrder() http.HandlerFunc {
 			logrus.Print(err)
 			h.Respond(w, r, http.StatusInternalServerError, nil)
 		}
-		h.Respond(w, r, http.StatusAccepted, nil)
+		h.Respond(w, r, http.StatusOK, nil)
 	}
 }
 

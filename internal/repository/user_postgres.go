@@ -55,11 +55,13 @@ func (up *UserPostgres) ReserveFunds(user_id uint, service_id uint, order_id uin
 
 	query_users := "update users set balance=($1) where user_id=($2)"
 	up.db.QueryRow(query_users, user.Balance, user.UserID)
-	query_reserv := "insert into reservedfunds (user_id, service_id, order_id, price, status) values ($1, $2, $3, $4, $5)"
-	row := up.db.QueryRow(query_reserv, user.UserID, service_id, order_id, price, 0)
+	query_reserv := "insert into reservedfunds (user_id, service_id, order_id, price) values ($1, $2, $3, $4)"
+	row := up.db.QueryRow(query_reserv, user.UserID, service_id, order_id, price)
 	return row.Err()
 }
 
 func (up *UserPostgres) ConfirmOrder(user_id uint, service_id uint, order_id uint, price uint) error {
-	query := ""
+	query := "delete from reservedfunds where user_id=($1) and service_id=($2) and order_id=($3) and price=($4)"
+	row := up.db.QueryRow(query, user_id, service_id, order_id, price)
+	return row.Err()
 }
