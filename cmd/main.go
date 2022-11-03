@@ -6,20 +6,22 @@ import (
 	"github.com/Vzhrkv/avito_internship/internal/repository"
 	"github.com/Vzhrkv/avito_internship/internal/service"
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"log"
 	"os"
 
 	_ "github.com/lib/pq"
 )
 
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	if err := InitConfig(); err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 
 	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 
 	db, err := repository.NewPostgresDb(&repository.Config{
@@ -32,7 +34,7 @@ func main() {
 	})
 
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 
 	repo := repository.NewRepository(db)
@@ -42,7 +44,7 @@ func main() {
 	srv := new(server.Server)
 	port := viper.GetString("port")
 	if err := srv.Run(port, handler_main.InitRoutes()); err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 }
 func InitConfig() error {

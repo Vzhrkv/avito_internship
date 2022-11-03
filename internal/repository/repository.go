@@ -1,8 +1,12 @@
 package repository
 
-import "database/sql"
+import (
+	"database/sql"
+	model "github.com/Vzhrkv/avito_internship/internal/database"
+)
 
 type UserBalance interface {
+	CreateBalance(u *model.User) error
 }
 
 type Repository struct {
@@ -10,5 +14,7 @@ type Repository struct {
 }
 
 func NewRepository(db *sql.DB) *Repository {
-	return &Repository{}
+	return &Repository{
+		UserBalance: NewUserPostgres(db),
+	}
 }

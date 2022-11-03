@@ -1,5 +1,6 @@
 create table users (
-    user_id integer,
+    user_id integer not null ,
     balance money,
     "reserved-funds" money
 );
+
