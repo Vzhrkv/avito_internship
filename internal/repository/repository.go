@@ -6,8 +6,10 @@ import (
 )
 
 type UserBalance interface {
-	CreateBalance(u *model.User) error
+	AddBalance(u *model.User) error
 	GetBalance(id uint) (uint, error)
+	ReserveFunds(user_id uint, service_id uint, order_id uint, price uint) error
+	ConfirmOrder(user_id uint, service_id uint, order_id uint, price uint) error
 }
 
 type Repository struct {
