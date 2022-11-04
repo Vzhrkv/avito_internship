@@ -20,10 +20,14 @@ func (bs *BalanceService) GetBalance(id uint) (uint, error) {
 	return bs.repo.GetBalance(id)
 }
 
-func (bs *BalanceService) ReserveBalance(user_id uint, service_id uint, order_id uint, price uint) error {
-	return bs.repo.ReserveFunds(user_id, service_id, order_id, price)
+func (bs *BalanceService) ReserveBalance(userId uint, serviceId uint, orderId uint, price uint) error {
+	return bs.repo.ReserveFunds(userId, serviceId, orderId, price)
 }
 
-func (bs *BalanceService) ConfirmOrder(user_id uint, service_id uint, order_id uint, price uint) error {
-	return bs.repo.ConfirmOrder(user_id, service_id, order_id, price)
+func (bs *BalanceService) ConfirmOrder(userId uint, serviceId uint, orderId uint, price uint) error {
+	return bs.repo.ConfirmOrder(userId, serviceId, orderId, price)
+}
+
+func (bs *BalanceService) SendToOtherUser(userId uint, otherUserId uint, funds uint) error {
+	return bs.repo.SendToOtherUser(userId, otherUserId, funds)
 }

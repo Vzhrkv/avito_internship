@@ -17,5 +17,5 @@ func LogToFile(in *model.Order) {
 		in.UserID, in.ServiceID, in.OrderID, in.Price)
 
 	logrus.SetOutput(file)
-	logrus.Error(msg)
+	logrus.Info(msg)
 }

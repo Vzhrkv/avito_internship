@@ -37,6 +37,30 @@ func (up *UserPostgres) GetBalance(id uint) (uint, error) {
 	return money, nil
 }
 
+func (up *UserPostgres) SendToOtherUser(userId uint, otherUserId uint, funds uint) error {
+	u, err := up.getUser(userId)
+	if err != nil {
+		return err
+	}
+	other_u, err := up.getUser(otherUserId)
+	if err != nil {
+		return err
+	}
+	if u.Balance >= funds {
+		u.Balance -= funds
+		other_u.Balance += funds
+		query := "update users set balance=($1) where user_id=($2)"
+		if err = up.db.QueryRow(query, u.Balance, u.UserID).Err(); err != nil {
+			return err
+		}
+		if err = up.db.QueryRow(query, other_u.Balance, other_u.UserID).Err(); err != nil {
+			return err
+		}
+		return nil
+	}
+	return errors.New("User don't have such amount of money")
+}
+
 func (up *UserPostgres) getUser(id uint) (model.User, error) {
 	var u model.User
 	query := "select * from users where user_id=($1)"
@@ -48,8 +72,8 @@ func (up *UserPostgres) getUser(id uint) (model.User, error) {
 	return u, nil
 }
 
-func (up *UserPostgres) ReserveFunds(user_id uint, service_id uint, order_id uint, price uint) error {
-	user, err := up.getUser(user_id)
+func (up *UserPostgres) ReserveFunds(userId uint, serviceId uint, orderId uint, price uint) error {
+	user, err := up.getUser(userId)
 	if err != nil {
 		return err
 	}
@@ -61,24 +85,24 @@ func (up *UserPostgres) ReserveFunds(user_id uint, service_id uint, order_id uin
 	query_users := "update users set balance=($1) where user_id=($2)"
 	up.db.QueryRow(query_users, user.Balance, user.UserID)
 	query_reserv := "insert into reservedfunds (user_id, service_id, order_id, price) values ($1, $2, $3, $4)"
-	row := up.db.QueryRow(query_reserv, user.UserID, service_id, order_id, price)
+	row := up.db.QueryRow(query_reserv, user.UserID, serviceId, orderId, price)
 	return row.Err()
 }
 
-func (up *UserPostgres) ConfirmOrder(user_id uint, service_id uint, order_id uint, price uint) error {
-	_, err := up.getOrder(user_id, service_id, order_id, price)
+func (up *UserPostgres) ConfirmOrder(userId uint, serviceId uint, orderId uint, price uint) error {
+	_, err := up.getOrder(userId, serviceId, orderId, price)
 	if err != nil {
-		return errors.New("No such order")
+		return err
 	}
 	query := "delete from reservedfunds where user_id=($1) and service_id=($2) and order_id=($3) and price=($4)"
-	row := up.db.QueryRow(query, user_id, service_id, order_id, price)
+	row := up.db.QueryRow(query, userId, serviceId, orderId, price)
 	return row.Err()
 }
 
-func (up *UserPostgres) getOrder(user_id uint, service_id uint, order_id uint, price uint) (model.Order, error) {
+func (up *UserPostgres) getOrder(userId uint, serviceId uint, orderId uint, price uint) (model.Order, error) {
 	var ord model.Order
 	query := "select * from reservedfunds where user_id=($1) and service_id=($2) and order_id=($3) and price=($4)"
-	row := up.db.QueryRow(query, user_id, service_id, order_id, price)
+	row := up.db.QueryRow(query, userId, serviceId, orderId, price)
 	err := row.Scan(&ord.UserID, &ord.ServiceID, &ord.OrderID, &ord.Price)
 	if err != nil {
 		return model.Order{}, err

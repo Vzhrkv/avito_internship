@@ -7,8 +7,9 @@ import (
 type UserBalance interface {
 	AddBalance(id uint, funds uint) error
 	GetBalance(id uint) (uint, error)
-	ReserveBalance(user_id uint, service_id uint, order_id uint, price uint) error
-	ConfirmOrder(user_id uint, service_id uint, order_id uint, price uint) error
+	ReserveBalance(userId uint, serviceId uint, orderId uint, price uint) error
+	ConfirmOrder(userId uint, serviceId uint, orderId uint, price uint) error
+	SendToOtherUser(userId uint, otherUserId uint, funds uint) error
 }
 
 type Service struct {
