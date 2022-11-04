@@ -120,7 +120,6 @@ func (h *Handler) ConfirmOrder() http.HandlerFunc {
 		}
 		err := h.service.ConfirmOrder(in.UserID, in.ServiceID, in.OrderID, in.Price)
 		if err != nil {
-			logrus.Print(err)
 			h.Respond(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -151,7 +150,6 @@ func (h *Handler) SendToOtherUser() http.HandlerFunc {
 		}
 		err := h.service.SendToOtherUser(in.UserID, in.OtherUserId, in.FundsToSend)
 		if err != nil {
-			logrus.Print(err)
 			res := responses.Response{
 				Status: "failed",
 				Msg:    err.Error(),
