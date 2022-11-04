@@ -82,7 +82,12 @@ func (h *Handler) ReserveBalance() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		in := &model.Order{}
 		if err := json.NewDecoder(r.Body).Decode(in); err != nil {
-			h.Respond(w, r, http.StatusBadRequest, in)
+			res := responses.Response{
+				Status: "failed",
+				Msg:    err.Error(),
+			}
+			h.Respond(w, r, http.StatusBadRequest, res)
+			return
 		}
 		err := h.service.ReserveBalance(in.UserID, in.ServiceID, in.OrderID, in.Price)
 		if err != nil {
@@ -105,6 +110,7 @@ func (h *Handler) ReserveBalance() http.HandlerFunc {
 		h.Respond(w, r, http.StatusAccepted, res)
 	}
 }
+
 func (h *Handler) ConfirmOrder() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		in := &model.Order{}
