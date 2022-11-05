@@ -49,6 +49,11 @@ create table reservedFunds (
 );
 ```
 
+Запуск приложения:
+```bash
+make run 
+```
+
 
 ## Реализация
 
